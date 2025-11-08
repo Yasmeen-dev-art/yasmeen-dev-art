@@ -1,0 +1,71 @@
+--Welcome to my SQL Portfolio!!
+--Topic 1: Database Creation; PROJECT-  Blog Database
+
+--STEP 1: CREATE TABLES:
+
+CREATE TABLE Authors (
+    author_id SERIAL PRIMARY KEY,         -- PK: Unique identifier for the author (SERIAL is common for auto-increment)
+    username VARCHAR(50) UNIQUE NOT NULL, -- Must be unique (for login)
+    email VARCHAR(100) UNIQUE NOT NULL,   -- Must be unique
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    join_date DATE DEFAULT CURRENT_DATE
+);
+
+CREATE TABLE Posts (
+    post_id SERIAL PRIMARY KEY,
+    author_id INT NOT NULL,                                                        -- FK: Links to the Authors table
+    title VARCHAR(255) UNIQUE NOT NULL,
+    content TEXT NOT NULL,                                                         -- TEXT is good for long articles
+    publication_date TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    is_published BOOLEAN DEFAULT FALSE,
+
+    -- Define the Foreign Key Constraint
+    CONSTRAINT fk_author
+        FOREIGN KEY(author_id)
+        REFERENCES Authors(author_id)
+        ON DELETE CASCADE                                                           -- If an author is deleted, delete all their posts
+);
+
+CREATE TABLE Comments (
+    comment_id SERIAL PRIMARY KEY,
+    post_id INT NOT NULL,                                                            -- FK: Links to the Posts table
+    author_id INT,                                                                   -- FK: Optional, for registered users (NULL for guests)
+    comment_text VARCHAR(500) NOT NULL,
+    comment_date TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+
+    -- Define Foreign Key Constraints
+    CONSTRAINT fk_post
+        FOREIGN KEY(post_id)
+        REFERENCES Posts(post_id)
+        ON DELETE CASCADE, -- If a post is deleted, delete all its comments
+        
+    CONSTRAINT fk_comment_author
+        FOREIGN KEY(author_id)
+        REFERENCES Authors(author_id)
+        ON DELETE SET NULL                                                           -- If a registered author is deleted, their comments remain (attributed to NULL/Guest)
+);
+
+CREATE TABLE Tags (
+    tag_id SERIAL PRIMARY KEY,
+    tag_name VARCHAR(50) UNIQUE NOT NULL
+);
+
+CREATE TABLE Post_Tags (
+    post_id INT NOT NULL,
+    tag_id INT NOT NULL,
+
+    -- Define Foreign Key Constraints
+    CONSTRAINT fk_post_tag
+        FOREIGN KEY(post_id)
+        REFERENCES Posts(post_id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_tag_post
+        FOREIGN KEY(tag_id)
+        REFERENCES Tags(tag_id)
+        ON DELETE CASCADE,
+
+    -- This ensures the combination of the two IDs is unique (prevents adding the same tag twice to one post)
+    PRIMARY KEY (post_id, tag_id)
+);
