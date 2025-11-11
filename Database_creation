@@ -69,3 +69,47 @@ CREATE TABLE Post_Tags (
     -- This ensures the combination of the two IDs is unique (prevents adding the same tag twice to one post)
     PRIMARY KEY (post_id, tag_id)
 );
+
+
+--Inserting values:
+
+INSERT INTO Authors (username, email, first_name, last_name, join_date) VALUES
+('code_maven', 'alex@blog.com', 'Alex', 'Johnson', '2023-01-15'),
+('data_digger', 'maria@blog.com', 'Maria', 'Garcia', '2023-03-22'),
+('front_end_fan', 'sam@blog.com', 'Sam', 'Kruger', '2023-07-10');
+
+
+INSERT INTO Posts (author_id, title, content, publication_date, is_published) VALUES
+(1, 'The Joy of SQL Joins: A Beginner''s Guide', 'Content about INNER, LEFT, RIGHT, and FULL joins...', '2023-11-01 10:00:00', TRUE),
+(2, 'Mastering Python Data Structures in 10 Minutes', 'A deep dive into lists, dictionaries, and sets...', '2023-11-05 14:30:00', TRUE),
+(1, 'Database Normalization: The Good, The Bad, and The 3NF', 'Explaining 1NF, 2NF, and 3NF with examples.', '2023-10-25 08:00:00', TRUE),
+(3, '10 Essential CSS Tricks for Responsive Design', 'Tips on Flexbox, Grid, and media queries.', '2023-11-10 12:00:00', TRUE),
+(3, 'Future of JavaScript Frameworks', 'A look at React, Vue, and Svelte.', '2023-11-11 15:00:00', FALSE); -- Unpublished post
+
+INSERT INTO Tags (tag_name) VALUES
+('SQL'),
+('PostgreSQL'),
+('Python'),
+('Data Science'),
+('Web Development'),
+('CSS'),
+('JavaScript');
+
+INSERT INTO Post_Tags (post_id, tag_id) VALUES
+(1, 1), -- Post 1 (SQL Joins) -> Tag 1 (SQL)
+(1, 2), -- Post 1 (SQL Joins) -> Tag 2 (PostgreSQL)
+(2, 3), -- Post 2 (Python Data) -> Tag 3 (Python)
+(2, 4), -- Post 2 (Python Data) -> Tag 4 (Data Science)
+(3, 1), -- Post 3 (Normalization) -> Tag 1 (SQL)
+(3, 2), -- Post 3 (Normalization) -> Tag 2 (PostgreSQL)
+(4, 5), -- Post 4 (CSS Tricks) -> Tag 5 (Web Development)
+(4, 6), -- Post 4 (CSS Tricks) -> Tag 6 (CSS)
+(5, 5), -- Post 5 (JS Frameworks) -> Tag 5 (Web Development)
+(5, 7); -- Post 5 (JS Frameworks) -> Tag 7 (JavaScript)            
+
+INSERT INTO Comments (post_id, author_id, comment_text) VALUES
+(1, 2, 'Great explanation of FULL OUTER JOIN! Very clear.'), -- Maria comments on Alex's post
+(1, NULL, 'As a newbie, this helped me a lot with my homework!'), -- Guest comment
+(3, 1, 'I think 3NF is key for most business apps.'), -- Alex comments on his own post
+(4, 3, 'My favorite is the new CSS Subgrid feature!'), -- Sam comments on his own post
+(2, NULL, 'Do you have an article coming up on Pandas?'); -- Guest comment
