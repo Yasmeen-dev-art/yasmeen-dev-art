@@ -1,0 +1,206 @@
+--Question 1: Basic Selection and Filtering
+
+--Write a query to retrieve the first_name, last_name, and salary of all employees in the 'Sales' department.
+SELECT 
+	first_name, last_name, salary 
+FROM
+	 employees
+WHERE 
+	department='Sales';
+
+--Question 2: Finding Unique Values (DISTINCT)
+
+--Write a query to find a list of all unique department names present in the Employees table.
+
+SELECT 
+	DISTINCT department
+FROM
+	employees
+ORDER BY 
+	department;
+
+--Question 3: Sorting and Limiting (ORDER BY DESC, LIMIT)
+
+--Write a query to retrieve the first_name and salary of the top 1 highest-paid employees.
+
+SELECT 
+	first_name, salary
+FROM
+	employees
+ORDER BY
+	salary DESC
+LIMIT 1;
+
+--Question 4: Range Filtering (BETWEEN)
+
+--Write a query to find the last_name and hire_date for all employees who were hired between '2015-01-01' and '2017-08-01' (inclusive).
+
+SELECT 
+	last_name, hire_date
+FROM
+	employees
+WHERE
+	hire_date BETWEEN '2015-01-01' AND'2017-08-01';
+
+--Question 5: Column Aliasing
+
+--Write a query that retrieves the first_name and salary for all employees, but rename the output column salary to Annual_Compensation.
+
+SELECT 
+	first_name, salary as "Annual Compensation"
+FROM
+	employees;
+
+--Question 6: SUB-QUERY
+
+--Write a query to find the first_name and department of all employees who are not managers (is_manager is FALSE) and have a salary greater than $80,000$.
+SELECT 
+    first_name,
+    department,
+	Salary
+FROM 
+    employees
+WHERE 
+    employee_id NOT IN (
+        SELECT DISTINCT manager_id 
+        FROM employees
+        WHERE manager_id IS NOT NULL
+    )
+    AND salary > 50000;
+
+SELECT 
+    first_name,
+    department
+FROM 
+    employees e
+WHERE 
+    NOT EXISTS (
+        SELECT 1 
+        FROM employees m
+        WHERE m.manager_id = e.employee_id
+    )
+    AND e.salary > 50000;
+
+
+--Question 7: Pattern Matching (LIKE)
+
+--Write a query to find the first_name and last_name of all employees whose last_name starts with the letter 'S'.
+SELECT 
+	first_name, last_name 
+FROM
+	employees
+WHERE 
+	last_name LIKE 'S%';
+
+--Question 8: List Membership (IN, NOT)
+
+--Write a query to retrieve the employee_id and department for all employees who work in departments other than 'IT' or 'Sales'.
+
+SELECT 
+	employee_id, department
+FROM
+	employees
+WHERE
+	department NOT IN ('IT','Sales');
+
+/* Question 9: Filtering, Ordering, and Column Aliasing (All Together)
+
+Write a single query that does the following:
+
+Retrieves first_name, last_name, and hire_date.
+
+Filters for employees whose first_name starts with 'A' or 'B'.
+
+Renames the hire_date column to Start_Date.
+
+Orders the results by last_name alphabetically (ASC).*/
+
+SELECT
+	first_name, last_name, hire_date as "Start_Date"
+FROM
+	employees
+WHERE
+	first_name LIKE 'A%' OR first_name LIKE 'E%'
+ORDER BY 
+	last_name ASC;
+
+--10.List employees who are managers.
+
+SELECT 
+	first_name, last_name, department, employee_id
+FROM
+	 employees
+WHERE employee_id IN 
+(SELECT DISTINCT manager_id
+ FROM employees
+ where manager_id IS NOT NULL);
+
+SELECT 
+	first_name, last_name, department, employee_id
+FROM
+	 employees e
+WHERE 
+	EXISTS (SELECT 1 FROM employees m where m.manager_id = e.employee_id  );
+	
+--11.Find all employees whose hire_date is the earliest in the company.
+
+SELECT 
+	first_name, last_name, hire_date
+FROM
+	employees
+WHERE hire_date =
+	(SELECT MIN(hire_date) FROM employees);
+
+
+SELECT 
+	first_name, last_name, hire_date, department
+FROM
+	employees
+ORDER BY
+	hire_date ASC
+LIMIT 1;
+
+--12. Show first_name, department of employees who are in departments managed by manager 101.
+
+SELECT 
+	first_name, last_name, department 
+FROM
+	employees 
+WHERE manager_id =101;
+
+--13. Find departments that have more than 1 employee.
+SELECT department, COUNT(*) AS total_employees
+FROM employees
+GROUP BY department 
+HAVING count(*)>1;
+
+--14.Show employees who have the same department as “Bob”.
+
+SELECT first_name, last_name, department
+FROM employees
+WHERE department = (select department from employees where first_name='Bob');
+
+--15.Find the highest-paid employee in the Sales department.
+SELECT 
+	first_name, last_name, salary
+FROM 
+	employees
+WHERE salary = (select max(salary) from employees where department= 'Sales');
+	
+SELECT 
+	first_name, last_name, salary, department
+FROM 
+	employees
+WHERE
+	department='Sales'
+ORDER BY 
+	salary DESC
+LIMIT 1;
+
+--16.List all employees whose salary is greater than the average salary.
+
+SELECT 
+	CONCAT(first_name,' ',last_name) AS full_name, salary
+FROM
+	employees
+WHERE salary >(SELECT AVG(salary) from employees);
