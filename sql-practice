@@ -204,3 +204,109 @@ SELECT
 FROM
 	employees
 WHERE salary >(SELECT AVG(salary) from employees);
+
+--17. Find the total number of employees in each department.
+
+SELECT
+	department, count(*) as total_number_of_employees 
+FROM 
+	employees
+GROUP BY 
+	 department
+ORDER BY COUNT(*) DESC;
+
+--18.Show the number of employees hired each year.
+SELECT
+	EXTRACT(YEAR FROM hire_date) AS hire_year, count(*) as no_of_employees
+FROM
+	employees
+GROUP BY EXTRACT(YEAR FROM hire_date)
+ORDER BY COUNT(*) DESC;
+
+--19. Write a query to find the average salary of the 'SALES' department, but round the result to 0 decimal places (whole number).
+SELECT 
+	ROUND(AVG(SALARY),0) AS AVG_SALARY
+FROM
+	employees
+WHERE 
+	department='Sales';
+
+--20.Find the second highest salary.
+
+SELECT MAX(salary) AS second_highest_salary
+FROM employees
+WHERE salary < (SELECT MAX(salary) FROM employees);
+
+--21. Find the highest salary in each department 
+
+SELECT
+    first_name,last_name,
+    Department,
+    Salary,
+    DENSE_RANK() OVER (
+        PARTITION BY Department
+        ORDER BY Salary DESC
+    ) AS Dept_Dense_Rank
+FROM
+    Employees
+ORDER BY
+    Department, Dept_Dense_Rank; 
+
+
+SELECT 
+    first_name,
+    last_name,
+    department,
+    salary,
+    Dept_Dense_Rank
+FROM (
+    SELECT
+        first_name,
+        last_name,
+        department,
+        salary,
+        DENSE_RANK() OVER (
+            PARTITION BY department
+            ORDER BY salary DESC
+        ) AS Dept_Dense_Rank
+    FROM
+        employees
+) t
+WHERE 
+    Dept_Dense_Rank = 1
+ORDER BY 
+    department, salary DESC;
+
+--22. Write a query to find the total salary (SUM) and average salary (AVG) for each department.
+SELECT 
+	department, sum(salary) AS total_salary, AVG(salary) AS avg_salary
+FROM
+	employees
+GROUP BY 
+	department;
+
+--23. Write a query to find the department_id and average salary, but only show departments where the average salary is greater than $70,000.
+SELECT 
+  department, Round(AVG(Salary),2)
+FROM 
+	employees
+GROUP BY department
+HAVING AVG(SALARY) > 60000;
+
+--24.Find employees who have a manager.(An employee has a manager only if their manager_id exists in employee_id)
+SELECT 
+	first_name, last_name, department, employee_id
+FROM
+	 employees e
+WHERE 
+	EXISTS (SELECT 1 FROM employees m where m.employee_id =e.manager_id);
+select * from employees;
+
+SELECT 
+	first_name, last_name, department, employee_id
+FROM
+	 employees
+WHERE manager_id IN 
+(SELECT  employee_id
+ FROM employees
+ where employee_id IS NOT NULL);
